@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
 using MvcContrib.FluentHtml.Behaviors;
+using MvcContrib.FluentHtml.Expressions;
 using MvcContrib.FluentHtml.Html;
 
 namespace MvcContrib.FluentHtml.Elements
@@ -16,9 +17,37 @@ namespace MvcContrib.FluentHtml.Elements
 	{
 		protected const string LABEL_FORMAT = "{0}_Label";
 
+        public const string OnlyVisibleWhenValueSelectedJavaScriptCode =
+@"
+    <script language='javascript'>
+        var selectElement{0} = document.getElementById('{0}');
+        var showOrHideElement{1} = document.getElementById('{1}');
+        if (selectElement{0} != null && showOrHideElement{1} != null)
+        {{
+            selectElement{0}.onchange = function() 
+            {{
+                ShowOrHide{1}Element();
+            }}
+            ShowOrHide{1}Element();
+        }}
+        
+        function ShowOrHide{1}Element()
+        {{
+            var selectedIndex = selectElement{0}.selectedIndex; 
+            var selectedValue = selectElement{0}.options[selectedIndex].value;
+            if (selectedValue == '{2}')
+                showOrHideElement{1}.style.display = '';
+            else
+                showOrHideElement{1}.style.display = 'none';               
+        }}
+    </script>
+";
+
 		protected readonly TagBuilder builder;
 		protected MemberExpression forMember;
 		protected IEnumerable<IBehaviorMarker> behaviors;
+        private string _onlyVisibleWhenValueSelectedSelectElementId;
+	    private string _onlyVisibleWhenValueSelectedValue;
 
 		protected Element(string tag, MemberExpression forMember, IEnumerable<IBehaviorMarker> behaviors) : this(tag)
 		{
@@ -151,6 +180,15 @@ namespace MvcContrib.FluentHtml.Elements
 			return (T)this;
 		}
 
+        public virtual T OnlyVisibleWhenValueSelected<TModel>(
+            Expression<Func<TModel, object>> propertyForSelect, object value)
+            where TModel : class
+        {
+            _onlyVisibleWhenValueSelectedSelectElementId = propertyForSelect.GetNameFor();
+            _onlyVisibleWhenValueSelectedValue = value.ToString();
+            return (T)this;
+        }
+
 		public override string ToString()
 		{
 			ApplyBehaviors();
@@ -158,8 +196,9 @@ namespace MvcContrib.FluentHtml.Elements
 			var html = RenderLabel(((IElement)this).LabelBeforeText);
 			html += builder.ToString(((IElement)this).TagRenderMode);
 			html += RenderLabel(((IElement)this).LabelAfterText);
-			return html;
-		}
+            html += RenderJavaScript(_onlyVisibleWhenValueSelectedSelectElementId, _onlyVisibleWhenValueSelectedValue); 
+            return html;
+ 		}
 
 		#region Explicit IElement members
 
@@ -215,7 +254,22 @@ namespace MvcContrib.FluentHtml.Elements
 			return labelBuilder.ToString();
 		}
 
-		protected TagBuilder GetLabelBuilder()
+        protected virtual string RenderJavaScript(
+            string onlyVisibleWhenValueSelectedSelectElementId,
+            string onlyVisibleWhenValueSelectedValue)
+        {
+            if(!string.IsNullOrEmpty(onlyVisibleWhenValueSelectedSelectElementId) &&
+               !string.IsNullOrEmpty(onlyVisibleWhenValueSelectedValue))
+            {
+                return string.Format(OnlyVisibleWhenValueSelectedJavaScriptCode,
+                                     onlyVisibleWhenValueSelectedSelectElementId, ((IElement)this).GetAttr("id"),
+                                     onlyVisibleWhenValueSelectedValue);
+            }
+
+            return "";
+        }
+
+	    protected TagBuilder GetLabelBuilder()
 		{
 			var labelBuilder = new TagBuilder(HtmlTag.Label);
 			if (builder.Attributes.ContainsKey(HtmlAttribute.Id))
