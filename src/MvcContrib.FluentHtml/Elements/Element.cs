@@ -10,7 +10,7 @@ using MvcContrib.FluentHtml.Html;
 namespace MvcContrib.FluentHtml.Elements
 {
 	/// <summary>
-	/// Base class for HTML elements.
+	/// Base class for HTML elements. 
 	/// </summary>
 	/// <typeparam name="T">The derived class type.</typeparam>
 	public abstract class Element<T> : IMemberElement where T : Element<T>, IElement
