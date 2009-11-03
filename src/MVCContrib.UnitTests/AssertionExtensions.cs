@@ -2,39 +2,39 @@ using NUnit.Framework;
 
 namespace MvcContrib.UnitTests
 {
-	public static class AssertionExtensions
+	internal static class AssertionExtensions
 	{
-		public static void ShouldNotBeNull(this object actual)
+		internal static void ShouldNotBeNull(this object actual)
 		{
 			Assert.IsNotNull(actual);
 		}
 
-		public static void ShouldEqual(this object actual, object expected)
+		internal static void ShouldEqual(this object actual, object expected)
 		{
 			Assert.AreEqual(expected, actual);
 		}
 
-		public static void ShouldBeTheSameAs(this object actual, object expected)
+		internal static void ShouldBeTheSameAs(this object actual, object expected)
 		{
 			Assert.AreSame(expected, actual);
 		}
 
-		public static void ShouldBeNull(this object actual)
+		internal static void ShouldBeNull(this object actual)
 		{
 			Assert.IsNull(actual);
 		}
 
-		public static void ShouldBeFalse(this bool value)
+		internal static void ShouldBeFalse(this bool value)
 		{
 			Assert.IsFalse(value);
 		}
 
-		public static void ShouldBeTrue(this bool value)
+		internal static void ShouldBeTrue(this bool value)
 		{
 			Assert.IsTrue(value);
 		}
 
-		public static void ShouldBe<T>(this object obj)
+		internal static void ShouldBe<T>(this object obj)
 		{
 			Assert.IsInstanceOfType(typeof(T), obj);
 		}

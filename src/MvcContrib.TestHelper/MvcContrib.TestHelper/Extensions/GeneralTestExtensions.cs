@@ -5,7 +5,7 @@ namespace MvcContrib.TestHelper
     /// <summary>
     /// Contains basic extension methods to simplify testing.
     /// </summary>
-    public static class GeneralTestExtensions
+    internal static class GeneralTestExtensions
     {
         /// <summary>
         /// Asserts that the object is of type T.  Also returns T to enable method chaining.
@@ -14,7 +14,7 @@ namespace MvcContrib.TestHelper
         /// <param name="actual"></param>
         /// <param name="message">Message to display when assertion fails</param>
         /// <returns></returns>
-        public static T ShouldBe<T>(this object actual,string message) where T : class
+        internal static T ShouldBe<T>(this object actual,string message) where T : class
         {
             //Assert.That(actual, Is.InstanceOfType(typeof(T)));
             if(actual as T ==null)
@@ -29,7 +29,7 @@ namespace MvcContrib.TestHelper
         /// </summary>
         /// <param name="actual"></param>
         /// <param name="expected"></param>
-        public static void ShouldBe(this object actual, object expected)
+        internal static void ShouldBe(this object actual, object expected)
         {
             
             if(!actual.Equals(expected))
@@ -45,7 +45,7 @@ namespace MvcContrib.TestHelper
         /// </summary>
         /// <param name="actual"></param>
         /// <param name="expected"></param>
-        public static void AssertSameStringAs(this string actual, string expected)
+        internal static void AssertSameStringAs(this string actual, string expected)
         {
 
             if(!string.Equals(actual, expected, StringComparison.InvariantCultureIgnoreCase))
@@ -62,7 +62,7 @@ namespace MvcContrib.TestHelper
         ///<param name="Actual"></param>
         ///<param name="message"></param>
         ///<exception cref="AssertionException"></exception>
-        public static void ShouldNotBeNull(this object Actual, string message)
+        internal static void ShouldNotBeNull(this object Actual, string message)
         {
             if (Actual == null)
             {
@@ -77,7 +77,7 @@ namespace MvcContrib.TestHelper
         ///<param name="expected"></param>
         ///<param name="message"></param>
         ///<exception cref="AssertionException"></exception>
-        public static void ShouldEqual(this object actual, object expected, string message)
+        internal static void ShouldEqual(this object actual, object expected, string message)
         {
             if (actual == null && expected == null)
             {
