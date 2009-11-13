@@ -20,25 +20,25 @@ namespace MvcContrib.FluentHtml.Elements
         public const string OnlyVisibleWhenValueSelectedJavaScriptCode =
 @"
     <script language='javascript'>
-        var selectElement{0} = document.getElementById('{0}');
-        var showOrHideElement{1} = document.getElementById('{1}');
-        if (selectElement{0} != null && showOrHideElement{1} != null)
+        var selectElement{0} = $('#{0}');
+        var showOrHideElement{1} = $('#{1}');
+        if (selectElement{0}.length > 0 && showOrHideElement{1}.length > 0)
         {{
-            selectElement{0}.onchange = function() 
+            selectElement{0}.change(function() 
             {{
                 ShowOrHide{1}Element();
-            }}
+            }});
             ShowOrHide{1}Element();
         }}
         
         function ShowOrHide{1}Element()
         {{
-            var selectedIndex = selectElement{0}.selectedIndex; 
-            var selectedValue = selectElement{0}.options[selectedIndex].value;
+            var selectedIndex = selectElement{0}.get(0).selectedIndex; 
+            var selectedValue = selectElement{0}.get(0).options[selectedIndex].value;
             if (selectedValue == '{2}')
-                showOrHideElement{1}.style.display = '';
+                showOrHideElement{1}.show();
             else
-                showOrHideElement{1}.style.display = 'none';               
+                showOrHideElement{1}.hide();
         }}
     </script>
 ";
