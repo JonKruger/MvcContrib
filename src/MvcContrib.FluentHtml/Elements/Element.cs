@@ -184,7 +184,12 @@ namespace MvcContrib.FluentHtml.Elements
             Expression<Func<TModel, object>> propertyForSelect, object value)
             where TModel : class
         {
-            _onlyVisibleWhenValueSelectedSelectElementId = propertyForSelect.GetNameFor();
+            return OnlyVisibleWhenValueSelected(propertyForSelect.GetNameFor(), value);
+        }
+
+        public virtual T OnlyVisibleWhenValueSelected(string selectElementId, object value)
+        {
+            _onlyVisibleWhenValueSelectedSelectElementId = selectElementId;
             _onlyVisibleWhenValueSelectedValue = value.ToString();
             return (T)this;
         }
