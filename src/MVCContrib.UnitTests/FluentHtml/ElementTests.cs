@@ -13,9 +13,9 @@ namespace MvcContrib.UnitTests.FluentHtml
         [Test]
         public void Should_render_javascript_code_for_OnlyVisibleWhenValueSelected()
         {
-            var html = new TextBox("test").OnlyVisibleWhenValueSelected<TestModel>(m => m.String, 2).ToString();
+            var html = new TextBox("test").OnlyVisibleWhenValueSelected<TestModel>(m => m.String, 2, ".container").ToString();
             Assert.That(html.Contains(string.Format(Element<TextBox>.OnlyVisibleWhenValueSelectedJavaScriptCode,
-                "String", "test", 2)));
+                "String", "test", 2, ".container")));
         }
 
         [Test]

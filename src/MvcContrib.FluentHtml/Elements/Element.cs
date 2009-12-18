@@ -20,8 +20,20 @@ namespace MvcContrib.FluentHtml.Elements
         public const string OnlyVisibleWhenValueSelectedJavaScriptCode =
 @"
     <script language='javascript'>
-        var selectElement{0} = $('#{0}');
-        var showOrHideElement{1} = $('#{1}');
+        var containerControlSelector = '{3}';
+        
+        var selectElement{0} = null;
+        if (containerControlSelector == '')
+            selectElement{0} = $('#{0}');
+        else
+            selectElement{0} = $('{3}').find('#{0}');
+
+        var showOrHideElement{1} = null;
+        if (containerControlSelector == '')
+            showOrHideElement{1} = $('#{1}');
+        else
+            showOrHideElement{1} = $('{3}').find('#{1}');
+
         if (selectElement{0}.length > 0 && showOrHideElement{1}.length > 0)
         {{
             selectElement{0}.change(function() 
@@ -48,6 +60,7 @@ namespace MvcContrib.FluentHtml.Elements
 		protected IEnumerable<IBehaviorMarker> behaviors;
         private string _onlyVisibleWhenValueSelectedSelectElementId;
 	    private string _onlyVisibleWhenValueSelectedValue;
+	    private string _onlyVisibleWhenValueSelectedContainerControlSelector;
 
 		protected Element(string tag, MemberExpression forMember, IEnumerable<IBehaviorMarker> behaviors) : this(tag)
 		{
@@ -187,10 +200,23 @@ namespace MvcContrib.FluentHtml.Elements
             return OnlyVisibleWhenValueSelected(propertyForSelect.GetNameFor(), value);
         }
 
+        public virtual T OnlyVisibleWhenValueSelected<TModel>(
+            Expression<Func<TModel, object>> propertyForSelect, object value, string containerControlSelector)
+            where TModel : class
+        {
+            return OnlyVisibleWhenValueSelected(propertyForSelect.GetNameFor(), value, containerControlSelector);
+        }
+
         public virtual T OnlyVisibleWhenValueSelected(string selectElementId, object value)
+        {
+            return OnlyVisibleWhenValueSelected(selectElementId, value, null);
+        }
+
+        public virtual T OnlyVisibleWhenValueSelected(string selectElementId, object value, string containerControlSelector)
         {
             _onlyVisibleWhenValueSelectedSelectElementId = selectElementId;
             _onlyVisibleWhenValueSelectedValue = value.ToString();
+            _onlyVisibleWhenValueSelectedContainerControlSelector = containerControlSelector;
             return (T)this;
         }
 
@@ -201,7 +227,10 @@ namespace MvcContrib.FluentHtml.Elements
 			var html = RenderLabel(((IElement)this).LabelBeforeText);
 			html += builder.ToString(((IElement)this).TagRenderMode);
 			html += RenderLabel(((IElement)this).LabelAfterText);
-            html += RenderJavaScript(_onlyVisibleWhenValueSelectedSelectElementId, _onlyVisibleWhenValueSelectedValue); 
+            html += RenderJavaScript(
+                _onlyVisibleWhenValueSelectedSelectElementId, 
+                _onlyVisibleWhenValueSelectedValue, 
+                _onlyVisibleWhenValueSelectedContainerControlSelector); 
             return html;
  		}
 
@@ -261,14 +290,16 @@ namespace MvcContrib.FluentHtml.Elements
 
         protected virtual string RenderJavaScript(
             string onlyVisibleWhenValueSelectedSelectElementId,
-            string onlyVisibleWhenValueSelectedValue)
+            string onlyVisibleWhenValueSelectedValue,
+            string onlyVisibleWhenValueSelectedContainerControlSelector)
         {
             if(!string.IsNullOrEmpty(onlyVisibleWhenValueSelectedSelectElementId) &&
                !string.IsNullOrEmpty(onlyVisibleWhenValueSelectedValue))
             {
                 return string.Format(OnlyVisibleWhenValueSelectedJavaScriptCode,
                                      onlyVisibleWhenValueSelectedSelectElementId, ((IElement)this).GetAttr("id"),
-                                     onlyVisibleWhenValueSelectedValue);
+                                     onlyVisibleWhenValueSelectedValue,
+                                     onlyVisibleWhenValueSelectedContainerControlSelector);
             }
 
             return "";
